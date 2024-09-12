@@ -10,13 +10,22 @@ type Issue = {
   comments_url: string;
 };
 
+type Comment = {
+  id: number;
+  body: string;
+  user: {
+    login: string;
+  };
+};
+
 type SidebarProps = {
   issue: Issue | null; // Sidebar receives the issue object
+  comments: Comment[]; // Sidebar now also receives the comments array
 };
 
 
 
-export default function Sidebar({ issue }: SidebarProps) {
+export default function Sidebar({ issue, comments }: SidebarProps) {
  return (
     <Sheet
       className="Sidebar"
@@ -40,6 +49,14 @@ export default function Sidebar({ issue }: SidebarProps) {
        <div>
         Issue status is: {issue && issue.state !== null && issue.state}
       </div>
+      <div>
+        List of users:
+      </div>
+      {comments.map((comment) => (
+              <div>
+              {comment.user.login}
+            </div>
+          ))}
     </Sheet>
   );
 }

@@ -10,7 +10,7 @@ import {
 
 import ChatBubble from "./ChatBubble";
 import useFetch from "./useFetch";
-import { useState } from 'react';
+import {  useEffect, useState } from 'react';
 
 type User = {
   login: string;
@@ -50,15 +50,23 @@ type Comment = {
 // add a tupe message prop to store the selected issue number
 type MessagesPaneProps = {
   onIssueChange: (issue: Issue) => void;
+  onCommentsFetched: (comments: Comment[]) => void; 
 };
 
 
-export default function MessagesPane({ onIssueChange }: MessagesPaneProps) {
+export default function MessagesPane({ onIssueChange, onCommentsFetched }: MessagesPaneProps) {
   const [page, setPage] = useState(1);
   const [issueNumber, setIssue] = useState(0);
   const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
+
+  useEffect(() => {
+    if (comments.data && comments.data.length > 0) {
+      onCommentsFetched(comments.data);  // Send comments to parent
+    }
+  }, [comments.data, onCommentsFetched]);  
+
   // request issues by page
   const { data } = useFetch<IssueTab>({
     url: "https://api.github.com/repos/facebook/react/issues",  
@@ -67,10 +75,11 @@ export default function MessagesPane({ onIssueChange }: MessagesPaneProps) {
       per_page: 10, 
     }
   });
-
+console.log(comments.data)
   const handleRowClick = (issue: Issue) => {
      setIssue(issue.number);
      onIssueChange(issue);
+    
     // Vous pouvez gérer l'événement ici, comme rediriger vers une page de détails ou afficher un modal
   };
 // change issue page
