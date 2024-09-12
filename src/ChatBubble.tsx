@@ -3,7 +3,6 @@ import Box from "@mui/joy/Box";
 import Sheet from "@mui/joy/Sheet";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
-import { Interweave } from 'interweave';
 
 type ChatBubbleProps = {
   body: string;
@@ -36,13 +35,12 @@ export default function ChatBubble({ body, variant, created_at, user }: ChatBubb
               borderRadius: "lg",
               borderTopLeftRadius: 0,
               width: "100%",
-              overflowWrap: "break-word", // Ensure long words wrap
               wordBreak: "break-word", // Break long continuous text
               overflow: "hidden", // Prevent content overflow
             }}
           >
             <Typography level="body-sm" color="primary">
-             <Interweave content={body}/>
+             {body} 
             </Typography>
           </Sheet>
         </Box>

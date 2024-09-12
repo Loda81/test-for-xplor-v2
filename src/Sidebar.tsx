@@ -1,8 +1,23 @@
-import Input from "@mui/joy/Input";
 import Sheet from "@mui/joy/Sheet";
 
-export default function Sidebar() {
-  return (
+type Issue = {
+  id: number;
+  created_at: string;
+  number: number;
+  title: string;
+  state: string;
+  body: string;
+  comments_url: string;
+};
+
+type SidebarProps = {
+  issue: Issue | null; // Sidebar receives the issue object
+};
+
+
+
+export default function Sidebar({ issue }: SidebarProps) {
+ return (
     <Sheet
       className="Sidebar"
       sx={{
@@ -19,7 +34,12 @@ export default function Sidebar() {
         borderColor: "divider",
       }}
     >
-      <Input value="facebook/react/issues/7901" />
+       <div>
+         you are watching issue number : {issue && issue.number !== null && issue.number}
+      </div>
+       <div>
+        Issue status is: {issue && issue.state !== null && issue.state}
+      </div>
     </Sheet>
   );
 }
