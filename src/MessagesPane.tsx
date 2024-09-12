@@ -1,9 +1,15 @@
-import Chip from "@mui/joy/Chip";
-import Sheet from "@mui/joy/Sheet";
-import Stack from "@mui/joy/Stack";
-import Typography from "@mui/joy/Typography";
+import {
+  Chip,
+  Sheet,
+  Stack,
+  Typography,
+  Table,
+  Button,
+}  from "@mui/joy";
+
 import ChatBubble from "./ChatBubble";
 import useFetch from "./useFetch";
+import { useState } from 'react';
 
 type User = {
   login: string;
@@ -14,12 +20,22 @@ type Issue = {
   id: number;
   created_at: string;
   user: User;
-
   number: number;
   title: string;
   body: string;
   comments_url: string;
 };
+
+// Add object type array to store issues
+type IssueTab = {
+  id: number;
+  created_at: string;
+  user: User;
+  number: number;
+  title: string;
+  body: string;
+  comments_url: string;
+}[];
 
 type Comment = {
   id: number;
@@ -32,7 +48,29 @@ type Comment = {
 export default function MessagesPane() {
   const issue = useFetch<Issue>({ url: "https://api.github.com/repos/facebook/react/issues/7901" });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
+  const [page, setPage] = useState(1);
+  console.log(page)
+  // request issues by page
+  const { data } = useFetch<IssueTab>({
+    url: "https://api.github.com/repos/facebook/react/issues",  
+    params: {
+      page: page, 
+      per_page: 10, 
+    }
+  });
 
+  const handleRowClick = (issue: Issue) => {
+    alert(`You clicked on issue with ID: ${issue.title}`);
+    // Vous pouvez gérer l'événement ici, comme rediriger vers une page de détails ou afficher un modal
+  };
+// change issue page
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+  const handleLoadPrevious = () => {
+    setPage((prevPage) => prevPage - 1);
+  };
+console.log(data)
   return (
     <Sheet
       sx={{
@@ -42,7 +80,36 @@ export default function MessagesPane() {
         backgroundColor: "background.level1",
       }}
     >
+        {data && data.length > 0 ? (
+        <div>
+          <h2>Issues List</h2>
+          <Table>
+        <thead>
+          <tr>
+            <th style={{ width: '10%' }}>Creation date</th>
+            <th style={{ width: '90%' }}>Title</th>
+             </tr>
+        </thead>
+        <tbody>
+          {data.map(issue => {
+            const dateFormat = new Date(issue.created_at).toLocaleDateString()
+            return (
+            <tr key={issue.id} onClick={() => handleRowClick(issue)} style={{ cursor: 'pointer' }}>
+              <td style={{ width: '10%' }}>{dateFormat}</td>
+              <td style={{ width: '90%' }}>{issue.title}</td>
+            </tr>
+          )})}
+        </tbody>
+      </Table>        
+        </div>
+      ) : (
+        <div>No issues found.</div>
+      )}
+      <Button onClick={handleLoadPrevious}>previous</Button>
+      <Button onClick={handleLoadMore}>next</Button>
       {issue.data && (
+        <div>
+          <h2>Issues Exchanges</h2>
         <Stack
           direction="column"
           justifyContent="space-between"
@@ -76,6 +143,7 @@ export default function MessagesPane() {
           </Typography>
           <Typography level="body-sm">{issue.data.user.login}</Typography>
         </Stack>
+        </div>
       )}
       {comments.data && (
         <Stack spacing={2} justifyContent="flex-end" px={2} py={3}>
