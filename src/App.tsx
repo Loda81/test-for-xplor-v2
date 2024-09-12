@@ -5,11 +5,18 @@ import MessagesPane from "./MessagesPane";
 import Sidebar from "./Sidebar";
 import { useState } from 'react';
 
+type User = {
+  login: string;
+  avatar_url: string;
+};
+
+
 type Issue = {
   id: number;
   created_at: string;
   number: number;
   title: string;
+  user: User;
   state: string;
   body: string;
   comments_url: string;
@@ -17,11 +24,11 @@ type Issue = {
 
 type Comment = {
   id: number;
+  created_at: string;
+  user: User;
   body: string;
-  user: {
-    login: string;
-  };
 };
+
 
 function App() {
   //add state to store the selected issue number from MessagePane
@@ -33,7 +40,6 @@ function App() {
   };
 
   const handleCommentsFetched = (fetchedComments: Comment[]) => {
-    console.log(fetchedComments)
     setComments(fetchedComments); // Store the comments fetched by MessagesPane
   };
 

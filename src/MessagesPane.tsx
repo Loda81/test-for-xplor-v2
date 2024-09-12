@@ -28,17 +28,7 @@ type Issue = {
   comments_url: string;
 };
 
-// Add object type array to store issues
-type IssueTab = {
-  id: number;
-  created_at: string;
-  user: User;
-  state: string;
-  number: number;
-  title: string;
-  body: string;
-  comments_url: string;
-}[];
+
 
 type Comment = {
   id: number;
@@ -47,7 +37,7 @@ type Comment = {
   body: string;
 };
 
-// add a tupe message prop to store the selected issue number
+// add a tupe message prop to store the selected issue number & comments
 type MessagesPaneProps = {
   onIssueChange: (issue: Issue) => void;
   onCommentsFetched: (comments: Comment[]) => void; 
@@ -60,7 +50,6 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
   const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
-
   useEffect(() => {
     if (comments.data && comments.data.length > 0) {
       onCommentsFetched(comments.data);  // Send comments to parent
@@ -68,7 +57,7 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
   }, [comments.data, onCommentsFetched]);  
 
   // request issues by page
-  const { data } = useFetch<IssueTab>({
+  const { data } = useFetch<Issue[]>({
     url: "https://api.github.com/repos/facebook/react/issues",  
     params: {
       page: page < 1 ? 1 : page, 
@@ -79,9 +68,7 @@ console.log(comments.data)
   const handleRowClick = (issue: Issue) => {
      setIssue(issue.number);
      onIssueChange(issue);
-    
-    // Vous pouvez gérer l'événement ici, comme rediriger vers une page de détails ou afficher un modal
-  };
+ };
 // change issue page
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
