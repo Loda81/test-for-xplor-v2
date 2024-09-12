@@ -27,13 +27,14 @@ export default function ChatBubble({ body, variant, created_at, user }: ChatBubb
         </Stack>
         <Box>
           <Sheet
-            color="primary"
+            color="primary"            
             variant={variant}
             invertedColors={variant === "solid"}
             sx={{
               p: 1.25,
               borderRadius: "lg",
               borderTopLeftRadius: 0,
+              width: "100%",
             }}
           >
             <Typography level="body-sm" color="primary">

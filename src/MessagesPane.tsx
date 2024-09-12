@@ -41,15 +41,16 @@ type Comment = {
   id: number;
   created_at: string;
   user: User;
-
   body: string;
 };
 
 export default function MessagesPane() {
-  const issue = useFetch<Issue>({ url: "https://api.github.com/repos/facebook/react/issues/7901" });
-  const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
   const [page, setPage] = useState(1);
-  console.log(page)
+  const [issueNumber, setIssue] = useState(30940);
+  const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
+  const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
+ 
+  console.log(page,issueNumber)
   // request issues by page
   const { data } = useFetch<IssueTab>({
     url: "https://api.github.com/repos/facebook/react/issues",  
@@ -60,7 +61,7 @@ export default function MessagesPane() {
   });
 
   const handleRowClick = (issue: Issue) => {
-    alert(`You clicked on issue with ID: ${issue.title}`);
+     setIssue(issue.number);
     // Vous pouvez gérer l'événement ici, comme rediriger vers une page de détails ou afficher un modal
   };
 // change issue page
@@ -75,6 +76,7 @@ console.log(data)
     <Sheet
       sx={{
         height: "100%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         backgroundColor: "background.level1",
@@ -83,7 +85,7 @@ console.log(data)
         {data && data.length > 0 ? (
         <div>
           <h2>Issues List</h2>
-          <Table>
+          <Table hoverRow>
         <thead>
           <tr>
             <th style={{ width: '10%' }}>Creation date</th>
@@ -94,7 +96,11 @@ console.log(data)
           {data.map(issue => {
             const dateFormat = new Date(issue.created_at).toLocaleDateString()
             return (
-            <tr key={issue.id} onClick={() => handleRowClick(issue)} style={{ cursor: 'pointer' }}>
+            <tr 
+              key={issue.id}
+              onClick={() => handleRowClick(issue)}
+              style={{ cursor: 'pointer' }}
+              >
               <td style={{ width: '10%' }}>{dateFormat}</td>
               <td style={{ width: '90%' }}>{issue.title}</td>
             </tr>
@@ -105,8 +111,11 @@ console.log(data)
       ) : (
         <div>No issues found.</div>
       )}
-      <Button onClick={handleLoadPrevious}>previous</Button>
-      <Button onClick={handleLoadMore}>next</Button>
+      
+     <Button onClick={handleLoadPrevious}>previous</Button>
+     <Button onClick={handleLoadMore}>next</Button>
+      
+      
       {issue.data && (
         <div>
           <h2>Issues Exchanges</h2>
@@ -146,7 +155,9 @@ console.log(data)
         </div>
       )}
       {comments.data && (
-        <Stack spacing={2} justifyContent="flex-end" px={2} py={3}>
+        <Stack
+         spacing={2} justifyContent="flex-end" px={2} py={3}
+         >
           <ChatBubble variant="solid" {...issue.data!} />
           {comments.data.map((comment) => (
             <ChatBubble

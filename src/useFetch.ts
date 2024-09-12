@@ -6,6 +6,7 @@ function useFetch<T>(
   config: AxiosRequestConfig,
   options?: Partial<UndefinedInitialDataInfiniteOptions<any, any, any, any, any>>,
 ) {
+  console.log(config)
   return useInfiniteQuery({
     ...options,
     queryKey: [config],
