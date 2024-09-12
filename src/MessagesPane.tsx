@@ -5,6 +5,7 @@ import {
   Typography,
   Table,
   Button,
+  Grid,
 }  from "@mui/joy";
 
 import ChatBubble from "./ChatBubble";
@@ -46,7 +47,7 @@ type Comment = {
 
 export default function MessagesPane() {
   const [page, setPage] = useState(1);
-  const [issueNumber, setIssue] = useState(30940);
+  const [issueNumber, setIssue] = useState(7901);
   const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
@@ -55,7 +56,7 @@ export default function MessagesPane() {
   const { data } = useFetch<IssueTab>({
     url: "https://api.github.com/repos/facebook/react/issues",  
     params: {
-      page: page, 
+      page: page < 1 ? 1 : page, 
       per_page: 10, 
     }
   });
@@ -109,11 +110,17 @@ console.log(data)
       </Table>        
         </div>
       ) : (
-        <div>No issues found.</div>
+        <div>No issues found or pb with data loading.</div>
       )}
       
-     <Button onClick={handleLoadPrevious}>previous</Button>
-     <Button onClick={handleLoadMore}>next</Button>
+      <Grid container justifyContent="center" alignItems="center" spacing={2} sx={{ mt: 2 }}>
+        <Grid>
+          <Button onClick={handleLoadPrevious}>Previous page</Button>
+        </Grid>
+        <Grid>
+          <Button onClick={handleLoadMore}>Next page</Button>
+        </Grid>
+      </Grid>
       
       
       {issue.data && (
