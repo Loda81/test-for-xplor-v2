@@ -43,7 +43,7 @@ type MessagesPaneProps = {
 
 
 export default function MessagesPane({ onIssueChange, onCommentsFetched }: MessagesPaneProps) {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [issueNumber, setIssue] = useState(0);
    // Ne pas lancer la requête si issueNumber est 0
    const issue = useFetch<Issue>({
@@ -61,13 +61,11 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
 
   // request issues by page
   const { data } = useFetch<Issue[]>({
-    url: "https://api.github.com/repos/facebook/react/issues",
+    url: "https://api.github.com/repos/facebook/react/issues",  
     params: {
-      page: page < 1 ? 1 : page,
-      per_page: 10,
-    },
-  }, {
-    enabled: page > 0, // Ne pas activer tant que la page n'est pas supérieure à 0
+      page: page < 1 ? 1 : page, 
+      per_page: 10, 
+    }
   });
 console.log(comments.data)
   const handleRowClick = (issue: Issue) => {

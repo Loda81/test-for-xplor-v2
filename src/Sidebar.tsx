@@ -83,7 +83,10 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
         Initiator:
       </Typography>
       <Typography sx={{ fontSize: '16px', marginBottom: '16px' }}>
-        {issue?.user.login ?? "N/A"}
+            <Avatar size="sm" variant="solid" src={issue?.user.avatar_url} />         
+       <Typography sx={{ fontSize: '16px', marginLeft: '8px' }}>
+          {issue?.user.login ?? "N/A"}
+          </Typography>
       </Typography>
 
       {/* List of Contributors */}
@@ -93,12 +96,9 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
 
       {loginArray.map((lA) => (
         <div key={lA.login} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          {/* Badge with Avatar */}
           <Badge badgeContent={lA.nbMessage} color="primary">
             <Avatar size="sm" variant="solid" src={lA.avatar} />
           </Badge>
-
-          {/* Login name */}
           <Typography sx={{ fontSize: '16px', marginLeft: '8px' }}>
             {lA.login}
           </Typography>
