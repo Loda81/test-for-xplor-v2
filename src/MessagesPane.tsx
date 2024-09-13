@@ -28,8 +28,6 @@ type Issue = {
   comments_url: string;
 };
 
-
-
 type Comment = {
   id: number;
   created_at: string;
@@ -45,9 +43,14 @@ type MessagesPaneProps = {
 
 
 export default function MessagesPane({ onIssueChange, onCommentsFetched }: MessagesPaneProps) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [issueNumber, setIssue] = useState(0);
-  const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
+   // Ne pas lancer la requête si issueNumber est 0
+   const issue = useFetch<Issue>({
+    url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}`,
+  }, {
+    enabled: issueNumber !== 0, // Ne pas activer tant qu'il n'y a pas de numéro d'issue sélectionné
+  });  
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
   useEffect(() => {
@@ -58,11 +61,13 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
 
   // request issues by page
   const { data } = useFetch<Issue[]>({
-    url: "https://api.github.com/repos/facebook/react/issues",  
+    url: "https://api.github.com/repos/facebook/react/issues",
     params: {
-      page: page < 1 ? 1 : page, 
-      per_page: 10, 
-    }
+      page: page < 1 ? 1 : page,
+      per_page: 10,
+    },
+  }, {
+    enabled: page > 0, // Ne pas activer tant que la page n'est pas supérieure à 0
   });
 console.log(comments.data)
   const handleRowClick = (issue: Issue) => {
