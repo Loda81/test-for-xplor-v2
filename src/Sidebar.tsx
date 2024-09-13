@@ -1,10 +1,9 @@
-import Sheet from "@mui/joy/Sheet";
+import { Avatar, Sheet, Typography, Badge } from "@mui/joy";
 
 type User = {
   login: string;
   avatar_url: string;
 };
-
 
 type Issue = {
   id: number;
@@ -29,10 +28,30 @@ type SidebarProps = {
   comments: Comment[]; // Sidebar receives the comments array
 };
 
-
+type UniqueLogin = {
+  login: string;
+  nbMessage: number;
+  avatar: string;
+};
 
 export default function Sidebar({ issue, comments }: SidebarProps) {
- return (
+  // Create an array with unique login and count the number of messages
+  const uniqueLogins: { [key: string]: UniqueLogin } = {};
+   comments.forEach((comment) => {
+    if (comment.user.login && !uniqueLogins[comment.user.login]) {
+      uniqueLogins[comment.user.login] = {
+        login: comment.user.login,
+        avatar: comment.user.avatar_url,
+        nbMessage: 1,
+      };
+    } else if (comment.user.login && uniqueLogins[comment.user.login]) {
+      uniqueLogins[comment.user.login].nbMessage += 1;
+    }
+  });
+
+  const loginArray = Object.values(uniqueLogins);
+
+  return (
     <Sheet
       className="Sidebar"
       sx={{
@@ -49,31 +68,42 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
         borderColor: "divider",
       }}
     >
- <div style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 'bold' }}>
-  You are watching issue number: {issue && issue.number !== null ? issue.number : "N/A"}
-</div>
+      {/* Issue number */}
+      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+        You are watching issue number: {issue?.number ?? "N/A"}
+      </Typography>
 
-<div style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 'bold' }}>
-  Issue status is: {issue && issue.state !== null ? issue.state : "N/A"}
-</div>
+      {/* Issue status */}
+      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+        Issue status is: {issue?.state ?? "N/A"}
+      </Typography>
 
-<div style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 'bold' }}>
-  Initiator:
-</div>
+      {/* Initiator */}
+      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+        Initiator:
+      </Typography>
+      <Typography sx={{ fontSize: '16px', marginBottom: '16px' }}>
+        {issue?.user.login ?? "N/A"}
+      </Typography>
 
-<div style={{ marginBottom: '16px', fontSize: '16px' }}>
-  {issue && issue.user.login !== null ? issue.user.login : "N/A"}
-</div>
+      {/* List of Contributors */}
+      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+        List of Contributors:
+      </Typography>
 
-<div style={{ marginBottom: '16px', fontSize: '16px', fontWeight: 'bold' }}>
-  List of Contributors:
-</div>
+      {loginArray.map((lA) => (
+        <div key={lA.login} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          {/* Badge with Avatar */}
+          <Badge badgeContent={lA.nbMessage} color="primary">
+            <Avatar size="sm" variant="solid" src={lA.avatar} />
+          </Badge>
 
-{comments.map((comment) => (
-  <div key={comment.id} style={{ marginBottom: '8px', fontSize: '14px' }}>
-    {comment.user.login}
-  </div>
-))}
+          {/* Login name */}
+          <Typography sx={{ fontSize: '16px', marginLeft: '8px' }}>
+            {lA.login}
+          </Typography>
+        </div>
+      ))}
     </Sheet>
   );
 }

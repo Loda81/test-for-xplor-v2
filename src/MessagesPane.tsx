@@ -51,7 +51,7 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
   useEffect(() => {
-    if (comments.data && comments.data.length > 0) {
+    if (comments.data) {
       onCommentsFetched(comments.data);  // Send comments to parent
     }
   }, [comments.data, onCommentsFetched]);  

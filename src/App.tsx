@@ -40,7 +40,7 @@ function App() {
   };
 
   const handleCommentsFetched = (fetchedComments: Comment[]) => {
-    setComments(fetchedComments); // Store the comments fetched by MessagesPane
+     setComments(fetchedComments); // Store the comments fetched by MessagesPane
   };
 
   return (
