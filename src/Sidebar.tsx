@@ -82,12 +82,10 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
       <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
         Initiator:
       </Typography>
-      <Typography sx={{ fontSize: '16px', marginBottom: '16px' }}>
-            <Avatar size="sm" variant="solid" src={issue?.user.avatar_url} />         
-       <Typography sx={{ fontSize: '16px', marginLeft: '8px' }}>
-          {issue?.user.login ?? "N/A"}
-          </Typography>
-      </Typography>
+         <Avatar size="sm" variant="solid" src={issue?.user.avatar_url} />         
+           {issue?.user.login ?? "N/A"}
+     
+      
 
       {/* List of Contributors */}
       <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>

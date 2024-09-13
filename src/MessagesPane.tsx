@@ -67,8 +67,7 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
       per_page: 10, 
     }
   });
-console.log(comments.data)
-  const handleRowClick = (issue: Issue) => {
+ const handleRowClick = (issue: Issue) => {
      setIssue(issue.number);
      onIssueChange(issue);
  };
