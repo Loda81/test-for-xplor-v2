@@ -47,7 +47,7 @@ type MessagesPaneProps = {
 export default function MessagesPane({ onIssueChange, onCommentsFetched }: MessagesPaneProps) {
   const [page, setPage] = useState(1);
   const [issueNumber, setIssue] = useState(0);
-  const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` });
+  const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` },  { enabled: issueNumber === 0 ? false : true });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
   useEffect(() => {
@@ -57,14 +57,14 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
   }, [comments.data, onCommentsFetched]);  
 
   // request issues by page
-  const { data } = useFetch<Issue[]>({
+  const { data, isLoading } = useFetch<Issue[]>({
     url: "https://api.github.com/repos/facebook/react/issues",  
     params: {
       page: page < 1 ? 1 : page, 
       per_page: 10, 
     }
   });
-console.log(comments.data)
+  console.log(data)
   const handleRowClick = (issue: Issue) => {
      setIssue(issue.number);
      onIssueChange(issue);
@@ -85,7 +85,7 @@ console.log(comments.data)
         flexDirection: "column",
         backgroundColor: "background.level1",
       }}
-    >
+    >     
         {data && data.length > 0 ? (
         <div>
           <h2>Issues List</h2>
@@ -115,7 +115,7 @@ console.log(comments.data)
       ) : (
         <div>No issues found or pb with data loading.</div>
       )}
-      
+       {isLoading && (<div>Loading...</div>)}
       <Grid container justifyContent="center" alignItems="center" spacing={2} sx={{ mt: 2 }}>
         <Grid>
           <Button onClick={handleLoadPrevious}>Previous page</Button>
