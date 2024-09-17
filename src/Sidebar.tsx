@@ -1,4 +1,5 @@
-import { Avatar, Sheet, Typography, Badge } from "@mui/joy";
+import { Avatar, Sheet, Typography, Badge, Checkbox } from "@mui/joy";
+import { useState, useEffect } from "react";
 
 type User = {
   login: string;
@@ -26,31 +27,55 @@ type Comment = {
 type SidebarProps = {
   issue: Issue | null; // Sidebar receives the issue object
   comments: Comment[]; // Sidebar receives the comments array
+  onDisplayIssueChange: (displayIssue: { displayMessage: boolean; login: string;}[]) => void; //send display message info
 };
 
 type UniqueLogin = {
   login: string;
   nbMessage: number;
   avatar: string;
+  displayMessage: boolean;
 };
 
-export default function Sidebar({ issue, comments }: SidebarProps) {
+export default function Sidebar({ issue, comments, onDisplayIssueChange  }: SidebarProps) {
   // Create an array with unique login and count the number of messages
-  const uniqueLogins: { [key: string]: UniqueLogin } = {};
-   comments.forEach((comment) => {
-    if (comment.user.login && !uniqueLogins[comment.user.login]) {
-      uniqueLogins[comment.user.login] = {
-        login: comment.user.login,
-        avatar: comment.user.avatar_url,
-        nbMessage: 1,
-      };
-    } else if (comment.user.login && uniqueLogins[comment.user.login]) {
-      uniqueLogins[comment.user.login].nbMessage += 1;
-    }
-  });
+  const [displayIssues, setDisplayIssues] = useState<UniqueLogin[]>([]);
 
-  const loginArray = Object.values(uniqueLogins);
+  useEffect(() => {
+    const uniqueLogins: { [key: string]: UniqueLogin } = {};
 
+    comments.forEach((comment) => {
+      if (comment.user.login && !uniqueLogins[comment.user.login]) {
+        uniqueLogins[comment.user.login] = {
+          login: comment.user.login,
+          avatar: comment.user.avatar_url,
+          nbMessage: 1,
+          displayMessage: true, // Default value is true
+        };
+      } else if (comment.user.login && uniqueLogins[comment.user.login]) {
+        uniqueLogins[comment.user.login].nbMessage += 1;
+      }
+    });
+
+    setDisplayIssues(Object.values(uniqueLogins)); // Initialize displayIssues state
+  }, [comments]);
+
+     // Appeler onDisplayIssueChange chaque fois que displayIssue change
+     useEffect(() => {
+      onDisplayIssueChange(displayIssues);
+    }, [displayIssues, onDisplayIssueChange]);
+
+
+  const handleChangeChecked = (login: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayIssues((prevIssues) =>
+      prevIssues.map((issue) =>
+        issue.login === login
+          ? { ...issue, displayMessage: event.target.checked }
+          : issue
+      )
+    );
+  };
+  
   return (
     <Sheet
       className="Sidebar"
@@ -83,8 +108,7 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
         Initiator:
       </Typography>
          <Avatar size="sm" variant="solid" src={issue?.user.avatar_url} />         
-           {issue?.user.login ?? "N/A"}
-     
+           {issue?.user.login ?? "N/A"}   
       
 
       {/* List of Contributors */}
@@ -92,7 +116,7 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
         List of Contributors:
       </Typography>
 
-      {loginArray.map((lA) => (
+      {displayIssues.map((lA) => (
         <div key={lA.login} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
           <Badge badgeContent={lA.nbMessage} color="primary">
             <Avatar size="sm" variant="solid" src={lA.avatar} />
@@ -100,6 +124,11 @@ export default function Sidebar({ issue, comments }: SidebarProps) {
           <Typography sx={{ fontSize: '16px', marginLeft: '8px' }}>
             {lA.login}
           </Typography>
+          <Checkbox
+          title= "Show User's Messages?"
+          checked={lA.displayMessage}
+          onChange={handleChangeChecked(lA.login)}
+          />
         </div>
       ))}
     </Sheet>

@@ -6,6 +6,7 @@ import {
   Table,
   Button,
   Grid,
+  Switch,
 }  from "@mui/joy";
 
 import ChatBubble from "./ChatBubble";
@@ -29,7 +30,6 @@ type Issue = {
 };
 
 
-
 type Comment = {
   id: number;
   created_at: string;
@@ -37,16 +37,23 @@ type Comment = {
   body: string;
 };
 
+type DisplayIssue = {
+  login: string;
+  displayMessage: boolean;
+};
+
 // add a tupe message prop to store the selected issue number & comments
 type MessagesPaneProps = {
   onIssueChange: (issue: Issue) => void;
   onCommentsFetched: (comments: Comment[]) => void; 
+  displayIssues: DisplayIssue[] | null; // Sidebar receives the tab
 };
 
 
-export default function MessagesPane({ onIssueChange, onCommentsFetched }: MessagesPaneProps) {
+export default function MessagesPane({ onIssueChange, onCommentsFetched, displayIssues }: MessagesPaneProps) {
   const [page, setPage] = useState(1);
   const [issueNumber, setIssue] = useState(0);
+  const [showIssues, setShowIssues] = useState(true);
   const issue = useFetch<Issue>({ url: `https://api.github.com/repos/facebook/react/issues/${issueNumber}` },  { enabled: issueNumber === 0 ? false : true });
   const comments = useFetch<Comment[]>({ url: issue.data?.comments_url }, { enabled: issue.isFetched });
  
@@ -64,9 +71,9 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
       per_page: 10, 
     }
   });
-  console.log(data)
-  const handleRowClick = (issue: Issue) => {
+ const handleRowClick = (issue: Issue) => {
      setIssue(issue.number);
+     setShowIssues(false);
      onIssueChange(issue);
  };
 // change issue page
@@ -85,10 +92,21 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
         flexDirection: "column",
         backgroundColor: "background.level1",
       }}
-    >     
-        {data && data.length > 0 ? (
+    >   
+     <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+        <Typography 
+         level="h2"
+         noWrap
+        >Issues List
+        </Typography>
+        <Switch
+          checked={showIssues}
+          onChange={() => setShowIssues(prev => !prev)}
+        />
+      </Stack>
+
+        {showIssues && data && data.length > 0 ? (
         <div>
-          <h2>Issues List</h2>
           <Table hoverRow>
         <thead>
           <tr>
@@ -110,12 +128,8 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
             </tr>
           )})}
         </tbody>
-      </Table>        
-        </div>
-      ) : (
-        <div>No issues found or pb with data loading.</div>
-      )}
-       {isLoading && (<div>Loading...</div>)}
+      </Table>    
+      {isLoading && (<div>Loading...</div>)}
       <Grid container justifyContent="center" alignItems="center" spacing={2} sx={{ mt: 2 }}>
         <Grid>
           <Button onClick={handleLoadPrevious}>Previous page</Button>
@@ -123,12 +137,21 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
         <Grid>
           <Button onClick={handleLoadMore}>Next page</Button>
         </Grid>
-      </Grid>
+      </Grid>    
+        </div>
+      ) : (
+        showIssues && <div>No issues found or pb with data loading.</div>
+      )}
+   
       
       
       {issue.data && (
         <div>
-          <h2>Issues Exchanges</h2>
+             <Typography 
+         level="h2"
+         noWrap
+        >Issues exchanges
+        </Typography>
         <Stack
           direction="column"
           justifyContent="space-between"
@@ -164,18 +187,23 @@ export default function MessagesPane({ onIssueChange, onCommentsFetched }: Messa
         </Stack>
         </div>
       )}
-      {comments.data && (
+      {comments.data && displayIssues && (
         <Stack
          spacing={2} justifyContent="flex-end" px={2} py={3}
          >
           <ChatBubble variant="solid" {...issue.data!} />
-          {comments.data.map((comment) => (
-            <ChatBubble
-              key={comment.id}
-              variant={comment.user.login === issue.data!.user.login ? "solid" : "outlined"}
-              {...comment}
-            />
-          ))}
+          {comments.data.map((comment) => {
+            const toDisplay = displayIssues?.find(dI => dI.login === comment.user.login);
+           return (
+              toDisplay && toDisplay.displayMessage ? (
+                <ChatBubble
+                  key={comment.id}
+                  variant={comment.user.login === issue?.data?.user.login ? "solid" : "outlined"}
+                  {...comment}
+                />
+              ) : null
+            );
+          })}
         </Stack>
       )}
     </Sheet>
