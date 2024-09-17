@@ -55,8 +55,7 @@ function App() {
     setDisplayedIssues(displayIssue); // Store the selected issue object
   };
 
-  console.log(selectedIssue)
-  return (
+ return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>

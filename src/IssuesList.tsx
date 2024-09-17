@@ -17,15 +17,12 @@ import { Issue } from './type'
 // add a tupe message prop to store the selected issue number & comments
 type IssuesListProps = {
   onIssueChange: (issue: Issue) => void;
-
 };
 
 
 export default function IssuesList({ onIssueChange }: IssuesListProps) {
   const [page, setPage] = useState(1);
-  const [issueNumber, setIssue] = useState(0);
   const [showIssues, setShowIssues] = useState(true);
-   console.log(issueNumber)
 
   // request issues by page
   const { data, isLoading } = useFetch<Issue[]>({
@@ -36,7 +33,6 @@ export default function IssuesList({ onIssueChange }: IssuesListProps) {
     }
   });
  const handleRowClick = (issue: Issue) => {
-     setIssue(issue.number);
      setShowIssues(false);
      onIssueChange(issue);
  };
