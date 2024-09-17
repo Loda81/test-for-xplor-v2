@@ -2,6 +2,7 @@ import Box from "@mui/joy/Box";
 import CssBaseline from "@mui/joy/CssBaseline";
 import { CssVarsProvider } from "@mui/joy/styles";
 import MessagesPane from "./MessagesPane";
+import IssuesList from "./IssuesList";
 import Sidebar from "./Sidebar";
 import { useState } from 'react';
 
@@ -54,7 +55,7 @@ function App() {
     setDisplayedIssues(displayIssue); // Store the selected issue object
   };
 
-
+  console.log(selectedIssue)
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
@@ -67,9 +68,12 @@ function App() {
           />
         </Box>
         <Box component="main" sx={{ flex: 1 }}>
-          <MessagesPane 
-           displayIssues={displayIssues}
+          <IssuesList
            onIssueChange={handleIssueChange}
+            />
+          <MessagesPane 
+           selectedIssue={selectedIssue && selectedIssue}
+           displayIssues={displayIssues}
            onCommentsFetched={handleCommentsFetched}
              />
         </Box>
