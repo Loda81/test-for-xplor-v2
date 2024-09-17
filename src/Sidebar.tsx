@@ -38,12 +38,12 @@ type UniqueLogin = {
 };
 
 export default function Sidebar({ issue, comments, onDisplayIssueChange  }: SidebarProps) {
-  // Create an array with unique login and count the number of messages
-  const [displayIssues, setDisplayIssues] = useState<UniqueLogin[]>([]);
 
+  const [displayIssues, setDisplayIssues] = useState<UniqueLogin[]>([]);
+ // Create an array with unique login and count the number of messages when new comments 
   useEffect(() => {
     const uniqueLogins: { [key: string]: UniqueLogin } = {};
-
+  
     comments.forEach((comment) => {
       if (comment.user.login && !uniqueLogins[comment.user.login]) {
         uniqueLogins[comment.user.login] = {
@@ -60,7 +60,7 @@ export default function Sidebar({ issue, comments, onDisplayIssueChange  }: Side
     setDisplayIssues(Object.values(uniqueLogins)); // Initialize displayIssues state
   }, [comments]);
 
-     // Appeler onDisplayIssueChange chaque fois que displayIssue change
+     // call onDisplayIssueChange when displayIssue change
      useEffect(() => {
       onDisplayIssueChange(displayIssues);
     }, [displayIssues, onDisplayIssueChange]);
