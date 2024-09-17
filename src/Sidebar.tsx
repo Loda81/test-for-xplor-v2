@@ -40,7 +40,7 @@ type UniqueLogin = {
 export default function Sidebar({ issue, comments, onDisplayIssueChange  }: SidebarProps) {
 
   const [displayIssues, setDisplayIssues] = useState<UniqueLogin[]>([]);
- // Create an array with unique login and count the number of messages when new comments 
+ // Create an array with unique login and count the number of messages 
   useEffect(() => {
     const uniqueLogins: { [key: string]: UniqueLogin } = {};
   
@@ -65,7 +65,7 @@ export default function Sidebar({ issue, comments, onDisplayIssueChange  }: Side
       onDisplayIssueChange(displayIssues);
     }, [displayIssues, onDisplayIssueChange]);
 
-
+ // change the value of displaymessage for the corresponding user
   const handleChangeChecked = (login: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayIssues((prevIssues) =>
       prevIssues.map((issue) =>
@@ -93,26 +93,20 @@ export default function Sidebar({ issue, comments, onDisplayIssueChange  }: Side
         borderColor: "divider",
       }}
     >
-      {/* Issue number */}
       <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
         You are watching issue number: {issue?.number ?? "N/A"}
       </Typography>
 
-      {/* Issue status */}
       <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
         Issue status is: {issue?.state ?? "N/A"}
       </Typography>
 
-      {/* Initiator */}
-      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+     <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
         Initiator:
       </Typography>
          <Avatar size="sm" variant="solid" src={issue?.user.avatar_url} />         
            {issue?.user.login ?? "N/A"}   
-      
-
-      {/* List of Contributors */}
-      <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+       <Typography sx={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
         List of Contributors:
       </Typography>
 
